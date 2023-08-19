@@ -76,26 +76,41 @@ class MainActivity : AppCompatActivity() {
                     .build()
 
                 val request = Request.Builder()
-                    .url("https://f19b-35-185-9-95.ngrok.io/predict")
+                    .url("https://5422-34-86-121-110.ngrok.io/predict")
                     .post(requestBody)
                     .build()
 
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
-                val apiLatitude = 0.435378
-                val apiLongitude = 101.8858446
+                val apiLocation1 = Location("API1")
+                apiLocation1.latitude = 0.435378
+                apiLocation1.longitude = 101.8858446
 
-                val location = Location("API")
-                location.latitude = apiLatitude
-                location.longitude = apiLongitude
+                val apiLocation2 = Location("API2")
+                apiLocation2.latitude = 2.37966
+                apiLocation2.longitude = 99.15076
 
-                val distance = calculateDistanceFromApiLocation(location)
-                val responseMessage = if (distance <= 20) "Didalam radius" else "Diluar radius"
+                val currentLocation = Location("Current")
+                // TODO: Get the current latitude and longitude of the device using LocationManager or FusedLocationProviderClient
+                // For simplicity, let's assume you have the currentLocation values already.
+
+                // Replace these values with the actual current latitude and longitude
+                currentLocation.latitude = 0.0 // Your current latitude
+                currentLocation.longitude = 0.0 // Your current longitude
+
+                val distanceToApi1 = currentLocation.distanceTo(apiLocation1)
+                val distanceToApi2 = currentLocation.distanceTo(apiLocation2)
+
+                val responseMessage = when {
+                    distanceToApi1 <= 20 -> "Didalam radius gedung 1"
+                    distanceToApi2 <= 20 -> "Didalam radius gedung 2"
+                    else -> "Diluar radius"
+                }
 
                 runOnUiThread {
                     responseTextView.text = "$responseBody\n$responseMessage"
-                    distanceTextView.text = "Jarak dari lokasi: $distance meter"
+                    distanceTextView.text = "Jarak dari lokasi: ${currentLocation.distanceTo(apiLocation1)} meter" // Change this to show the appropriate distance
                 }
             } catch (e: IOException) {
                 Log.e("MainActivity", "Error sending image to API", e)
